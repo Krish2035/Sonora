@@ -41,7 +41,7 @@ export default function Home() {
 
   const { playSong } = usePlayer();
   const { storageUsage } = useOffline();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   useEffect(() => {
     async function loadData() {

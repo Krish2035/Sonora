@@ -9,7 +9,7 @@ export default function SettingsPage() {
   const { storageUsage, clearAllOfflineStorage, isOnline } = useOffline();
   const [swRegistered, setSwRegistered] = useState(false);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {

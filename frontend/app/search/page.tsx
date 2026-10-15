@@ -11,7 +11,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   // Fetch favorites list
   useEffect(() => {

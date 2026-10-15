@@ -48,7 +48,7 @@ export function FullScreenMobilePlayer() {
   const { offlineSongIds, downloadSong, removeOfflineSong, isDownloading } = useOffline();
   const [isFavorited, setIsFavorited] = useState<boolean>(false);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   const isOffline = currentSong ? offlineSongIds.has(currentSong.id) : false;
   const isCurrentlyDownloading = currentSong ? isDownloading[currentSong.id] : false;

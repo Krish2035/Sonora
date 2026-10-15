@@ -11,7 +11,7 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const { playSong, toggleShuffle } = usePlayer();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   useEffect(() => {
     async function fetchFavorites() {

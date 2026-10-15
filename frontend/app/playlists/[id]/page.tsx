@@ -29,7 +29,7 @@ export default function PlaylistDetailPage({ params }: { params: Promise<{ id: s
 
   const { playSong, toggleShuffle } = usePlayer();
   const { downloadPlaylist } = useOffline();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   const fetchPlaylist = async () => {
     try {

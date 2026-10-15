@@ -60,7 +60,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   // Keep ref synchronized with currentSong state
   currentSongRef.current = currentSong;
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   // Initialize Audio Element ONCE on mount
   useEffect(() => {

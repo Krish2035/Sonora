@@ -39,7 +39,7 @@ export function SongRow({
   const { offlineSongIds, downloadSong, removeOfflineSong, isDownloading } = useOffline();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
   const isCurrent = currentSong?.id === song.id;
   const isOffline = offlineSongIds.has(song.id);

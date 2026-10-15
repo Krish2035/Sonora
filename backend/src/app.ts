@@ -14,6 +14,14 @@ import { errorHandler } from './middleware/errorHandler.js';
 export function createApp(): Express {
   const app = express();
 
+  // Normalize duplicate slashes in request paths (e.g. //api/songs -> /api/songs)
+  app.use((req, res, next) => {
+    if (req.url.includes('//')) {
+      req.url = req.url.replace(/\/{2,}/g, '/');
+    }
+    next();
+  });
+
   // CORS configuration supporting production domains, Vercel preview URLs, and local dev
   const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => o.trim());
 
