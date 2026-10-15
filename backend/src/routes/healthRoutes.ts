@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../config/database.js';
+import { env } from '../config/env.js';
 
 export const healthRouter = Router();
 
@@ -20,7 +21,7 @@ healthRouter.get('/health', async (_req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
     services: {
       database: dbStatus,
-      storage: 'local',
+      storage: env.STORAGE_TYPE,
     },
   });
 });
