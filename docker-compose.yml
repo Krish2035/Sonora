@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: music_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: music_user
+      POSTGRES_PASSWORD: music_password
+      POSTGRES_DB: music_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - music_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U music_user -d music_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: music_backend
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://music_user:music_password@postgres:5432/music_db
+      STORAGE_TYPE: local
+      STORAGE_PATH: ./uploads
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - music_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: music_frontend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - music_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  music_network:
+    driver: bridge

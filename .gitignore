@@ -1,0 +1,44 @@
+# Node dependencies
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# Environment and secrets files (NEVER commit credentials)
+.env
+.env.*
+.env*.local
+*.env
+**/.env
+**/.env.*
+**/.env*.local
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+.vercel/
+
+# Backend build output
+backend/dist/
+
+# Storage binaries & uploaded audio (keep directory structure only)
+backend/uploads/audio/*
+!backend/uploads/audio/.gitkeep
+backend/uploads/art/*
+!backend/uploads/art/.gitkeep
+backend/uploads/temp/*
+
+# Local raw media archive (2GB+ binary music files - prevent GitHub 100MB rejection)
+resources/Music/*
+!resources/Music/.gitkeep
+resources/music/*
+!resources/music/.gitkeep
+
+# Operating system & IDE files
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
+.idea/

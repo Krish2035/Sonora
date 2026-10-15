@@ -1,0 +1,13 @@
+{
+  "name": "sonora-music-player",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "music:import": "cd backend && npm run music:import"
+  }
+}
