@@ -11,6 +11,9 @@ node_modules/
 **/.env
 **/.env.*
 **/.env*.local
+*firebase*.json
+*-key.json
+service-account*.json
 
 # Next.js build output
 frontend/.next/
