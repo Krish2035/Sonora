@@ -6,9 +6,6 @@ import { parseAudioMetadata } from '../services/metadataService.js';
 import { songRepository } from '../repositories/songRepository.js';
 import { pool, testDbConnection } from '../config/database.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 async function runImporter() {
   console.log('=== Sonora Music Ingestion Pipeline ===');
 
