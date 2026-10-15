@@ -12,6 +12,11 @@ const envSchema = z.object({
   STORAGE_TYPE: z.enum(['local', 's3']).default('local'),
   STORAGE_PATH: z.string().default('./uploads'),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET_NAME: z.string().optional(),
+  R2_PUBLIC_URL: z.string().optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
