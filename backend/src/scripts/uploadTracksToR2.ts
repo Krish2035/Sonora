@@ -49,15 +49,20 @@ async function main() {
   }
 
   const client = await pool.connect();
+  let songs: any[] = [];
   try {
     const res = await client.query('SELECT id, title, file_path, file_name, artwork_path FROM songs');
-    const songs = res.rows;
-    console.log(`Found ${songs.length} indexed songs in database. Starting R2 upload...`);
+    songs = res.rows;
+    console.log(`Found ${songs.length} indexed songs in database. Starting B2 upload...`);
+  } finally {
+    client.release();
+    await pool.end();
+  }
 
-    const uploadsBase = path.resolve(process.cwd(), 'uploads');
-    let uploadedCount = 0;
-    let skippedCount = 0;
-    let errorCount = 0;
+  const uploadsBase = path.resolve(process.cwd(), 'uploads');
+  let uploadedCount = 0;
+  let skippedCount = 0;
+  let errorCount = 0;
 
     for (let i = 0; i < songs.length; i++) {
       const song = songs[i];
@@ -117,16 +122,12 @@ async function main() {
       }
     }
 
-    console.log('\n=== R2 Upload Summary ===');
-    console.log(`Total songs: ${songs.length}`);
-    console.log(`Uploaded now: ${uploadedCount}`);
-    console.log(`Already in R2: ${skippedCount}`);
-    console.log(`Errors / Missing: ${errorCount}`);
-    console.log('=========================\n');
-  } finally {
-    client.release();
-    await pool.end();
-  }
+  console.log('\n=== B2 Upload Summary ===');
+  console.log(`Total songs: ${songs.length}`);
+  console.log(`Uploaded now: ${uploadedCount}`);
+  console.log(`Already in B2: ${skippedCount}`);
+  console.log(`Errors / Missing: ${errorCount}`);
+  console.log('=========================\n');
 }
 
 main().catch(console.error);
