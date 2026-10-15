@@ -6,17 +6,28 @@ import { S3StorageService } from './S3StorageService.js';
 let storageInstance: StorageService;
 
 if (env.STORAGE_TYPE === 's3') {
-  if (!env.R2_ACCOUNT_ID || !env.R2_ACCESS_KEY_ID || !env.R2_SECRET_ACCESS_KEY || !env.R2_BUCKET_NAME) {
+  const accessKeyId = env.S3_ACCESS_KEY_ID || env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = env.S3_SECRET_ACCESS_KEY || env.R2_SECRET_ACCESS_KEY;
+  const bucket = env.S3_BUCKET_NAME || env.R2_BUCKET_NAME;
+  const endpoint = env.S3_ENDPOINT;
+  const accountId = env.R2_ACCOUNT_ID;
+  const region = env.S3_REGION;
+  const publicUrl = env.S3_PUBLIC_URL || env.R2_PUBLIC_URL;
+
+  if (!accessKeyId || !secretAccessKey || !bucket) {
     throw new Error(
-      'Cloudflare R2 configuration missing. R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and R2_BUCKET_NAME are required when STORAGE_TYPE=s3'
+      'S3 / Backblaze B2 configuration missing. Access Key, Secret Key, and Bucket Name are required when STORAGE_TYPE=s3'
     );
   }
+
   storageInstance = new S3StorageService({
-    accountId: env.R2_ACCOUNT_ID,
-    accessKeyId: env.R2_ACCESS_KEY_ID,
-    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-    bucket: env.R2_BUCKET_NAME,
-    publicUrl: env.R2_PUBLIC_URL,
+    endpoint,
+    region,
+    accountId,
+    accessKeyId,
+    secretAccessKey,
+    bucket,
+    publicUrl,
   });
 } else {
   storageInstance = new LocalStorageService(env.STORAGE_PATH);

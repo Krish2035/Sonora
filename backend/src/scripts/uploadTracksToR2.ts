@@ -5,22 +5,37 @@ import { pool, testDbConnection } from '../config/database.js';
 import { env } from '../config/env.js';
 
 async function main() {
-  console.log('=== Sonora Cloudflare R2 Music Sync ===');
+  console.log('=== Sonora Cloud Storage Music Sync (Backblaze B2 / Cloudflare R2) ===');
 
-  const accountId = env.R2_ACCOUNT_ID;
-  const accessKeyId = env.R2_ACCESS_KEY_ID;
-  const secretAccessKey = env.R2_SECRET_ACCESS_KEY;
-  const bucket = env.R2_BUCKET_NAME;
+  const accessKeyId = env.S3_ACCESS_KEY_ID || env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = env.S3_SECRET_ACCESS_KEY || env.R2_SECRET_ACCESS_KEY;
+  const bucket = env.S3_BUCKET_NAME || env.R2_BUCKET_NAME;
+  let endpoint = env.S3_ENDPOINT;
 
-  if (!accountId || !accessKeyId || !secretAccessKey || !bucket) {
-    console.error('ERROR: Cloudflare R2 environment variables are missing.');
-    console.error('Please configure R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and R2_BUCKET_NAME in backend/.env');
+  if (!endpoint && env.R2_ACCOUNT_ID) {
+    endpoint = `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
+  }
+  if (endpoint && !endpoint.startsWith('http://') && !endpoint.startsWith('https://')) {
+    endpoint = `https://${endpoint}`;
+  }
+
+  if (!endpoint || !accessKeyId || !secretAccessKey || !bucket) {
+    console.error('ERROR: S3 / Backblaze B2 configuration is missing.');
+    console.error('Please configure S3_ENDPOINT, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_BUCKET_NAME in backend/.env');
     process.exit(1);
   }
 
+  let region = env.S3_REGION || 'auto';
+  if (endpoint.includes('backblazeb2.com')) {
+    const match = endpoint.match(/s3\.([a-z0-9-]+)\.backblazeb2\.com/i);
+    if (match && match[1]) {
+      region = match[1];
+    }
+  }
+
   const s3 = new S3Client({
-    region: 'auto',
-    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    region,
+    endpoint,
     credentials: {
       accessKeyId,
       secretAccessKey,

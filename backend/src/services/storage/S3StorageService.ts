@@ -9,7 +9,9 @@ import {
 import { StorageService, FileMetadata } from './StorageService.js';
 
 export interface S3Config {
-  accountId: string;
+  endpoint?: string;
+  region?: string;
+  accountId?: string;
   accessKeyId: string;
   secretAccessKey: string;
   bucket: string;
@@ -25,11 +27,27 @@ export class S3StorageService implements StorageService {
     this.bucket = config.bucket;
     this.publicUrl = config.publicUrl;
 
-    // Cloudflare R2 uses an S3-compatible endpoint format:
-    // https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+    // Support Backblaze B2, Cloudflare R2, or AWS S3 endpoint
+    let resolvedEndpoint = config.endpoint;
+    if (!resolvedEndpoint && config.accountId) {
+      resolvedEndpoint = `https://${config.accountId}.r2.cloudflarestorage.com`;
+    }
+    if (resolvedEndpoint && !resolvedEndpoint.startsWith('http://') && !resolvedEndpoint.startsWith('https://')) {
+      resolvedEndpoint = `https://${resolvedEndpoint}`;
+    }
+
+    let resolvedRegion = config.region || 'auto';
+    if (resolvedEndpoint && resolvedEndpoint.includes('backblazeb2.com')) {
+      // Extract region from endpoint (e.g. s3.us-west-004.backblazeb2.com -> us-west-004)
+      const match = resolvedEndpoint.match(/s3\.([a-z0-9-]+)\.backblazeb2\.com/i);
+      if (match && match[1]) {
+        resolvedRegion = match[1];
+      }
+    }
+
     this.s3Client = new S3Client({
-      region: 'auto',
-      endpoint: `https://${config.accountId}.r2.cloudflarestorage.com`,
+      region: resolvedRegion,
+      endpoint: resolvedEndpoint,
       credentials: {
         accessKeyId: config.accessKeyId,
         secretAccessKey: config.secretAccessKey,
