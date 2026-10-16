@@ -5,6 +5,7 @@ import { Heart, Play, Shuffle, Disc3 } from 'lucide-react';
 import { Song } from '@/types/music';
 import { SongRow } from '@/components/songs/SongRow';
 import { usePlayer } from '@/context/PlayerContext';
+import { deduplicateSongsByTitle } from '@/lib/formatters';
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Song[]>([]);
@@ -20,7 +21,7 @@ export default function FavoritesPage() {
         const res = await fetch(`${apiUrl}/api/favorites`);
         if (res.ok) {
           const data = await res.json();
-          setFavorites(data.data || []);
+          setFavorites(deduplicateSongsByTitle(data.data || []));
         }
       } catch (err) {
         console.error('Failed fetching favorites:', err);

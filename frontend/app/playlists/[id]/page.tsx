@@ -16,7 +16,7 @@ import { Playlist } from '@/types/music';
 import { SongRow } from '@/components/songs/SongRow';
 import { usePlayer } from '@/context/PlayerContext';
 import { useOffline } from '@/context/OfflineContext';
-import { formatDuration } from '@/lib/formatters';
+import { formatDuration, deduplicateSongsByTitle } from '@/lib/formatters';
 
 export default function PlaylistDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -40,7 +40,12 @@ export default function PlaylistDetailPage({ params }: { params: Promise<{ id: s
 
       if (plRes.ok) {
         const plData = await plRes.json();
-        setPlaylist(plData.data);
+        if (plData.data) {
+          setPlaylist({
+            ...plData.data,
+            songs: deduplicateSongsByTitle(plData.data.songs || []),
+          });
+        }
       }
 
       if (favRes.ok) {

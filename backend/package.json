@@ -9,6 +9,7 @@
     "dev": "tsx watch src/server.ts",
     "db:migrate": "tsx src/db/migrate.ts",
     "music:import": "tsx src/scripts/importLocalMusic.ts",
+    "music:deduplicate": "node src/scripts/deduplicateSongs.js",
     "r2:sync": "tsx src/scripts/uploadTracksToR2.ts"
   },
   "dependencies": {

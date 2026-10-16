@@ -96,3 +96,6 @@ CREATE INDEX IF NOT EXISTS idx_playlist_songs_playlist_id ON playlist_songs(play
 
 -- Instant reverse chronological query for recently played songs
 CREATE INDEX IF NOT EXISTS idx_play_history_played_at ON play_history(played_at DESC);
+
+-- Unique index ensuring only one song per title
+CREATE UNIQUE INDEX IF NOT EXISTS idx_songs_unique_lower_title ON songs (LOWER(TRIM(title)));

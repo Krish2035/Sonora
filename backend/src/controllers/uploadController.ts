@@ -23,7 +23,21 @@ export async function handleAudioUpload(req: Request, res: Response, next: NextF
     // 1. Extract metadata
     const meta = await parseAudioMetadata(tempFilePath, targetArtDir);
 
-    // 2. Move file from temp to uploads/audio
+    // 2. Duplicate detection check (strictly one copy per song title)
+    const duplicate = await songRepository.findDuplicate(meta.title, meta.duration, meta.fileSize);
+    if (duplicate) {
+      if (fs.existsSync(tempFilePath)) {
+        await fs.promises.unlink(tempFilePath).catch(() => {});
+      }
+      res.status(409).json({
+        success: false,
+        error: `Song "${meta.title}" already exists in the library. Only one copy is kept.`,
+        data: duplicate,
+      });
+      return;
+    }
+
+    // 3. Move file from temp to uploads/audio
     const ext = path.extname(file.originalname);
     const safeDiskFileName = `${uuidv4()}${ext}`;
     const destinationPath = path.join(targetAudioDir, safeDiskFileName);

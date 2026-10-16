@@ -5,6 +5,7 @@ import { Library, Play, Shuffle, Disc3 } from 'lucide-react';
 import { Song } from '@/types/music';
 import { SongRow } from '@/components/songs/SongRow';
 import { usePlayer } from '@/context/PlayerContext';
+import { deduplicateSongsByTitle } from '@/lib/formatters';
 
 export default function LibraryPage() {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -28,7 +29,7 @@ export default function LibraryPage() {
         if (songsRes.ok) {
           const sData = await songsRes.json();
           if (sData.success) {
-            setSongs(sData.data);
+            setSongs(deduplicateSongsByTitle(sData.data));
             setTotal(sData.pagination.total);
           }
         }

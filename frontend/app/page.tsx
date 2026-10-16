@@ -20,6 +20,7 @@ import { Song } from '@/types/music';
 import { SongRow } from '@/components/songs/SongRow';
 import { usePlayer } from '@/context/PlayerContext';
 import { useOffline } from '@/context/OfflineContext';
+import { deduplicateSongsByTitle } from '@/lib/formatters';
 
 interface BackendHealth {
   status: string;
@@ -61,7 +62,7 @@ export default function Home() {
         if (songsRes.ok) {
           const sData = await songsRes.json();
           if (sData.success) {
-            setSongs(sData.data);
+            setSongs(deduplicateSongsByTitle(sData.data));
             setTotalSongs(sData.pagination.total);
           }
         }
@@ -73,7 +74,7 @@ export default function Home() {
 
         if (histRes.ok) {
           const histData = await histRes.json();
-          if (histData.data) setRecentHistory(histData.data);
+          if (histData.data) setRecentHistory(deduplicateSongsByTitle(histData.data));
         }
       } catch (err) {
         console.warn('Backend not yet reachable:', err);

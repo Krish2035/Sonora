@@ -63,16 +63,18 @@ export class SongRepository {
   }
 
   /**
-   * Check if song with identical title and duration or filename already exists
+   * Check if song with identical title or file already exists
    */
-  async findDuplicate(title: string, duration: number, fileSize: number): Promise<SongRecord | null> {
+  async findDuplicate(title: string, duration?: number, fileSize?: number): Promise<SongRecord | null> {
+    const trimmed = (title || '').trim();
+    if (!trimmed) return null;
     const query = `
       SELECT * FROM songs
-      WHERE (LOWER(title) = LOWER($1) AND ABS(duration - $2) < 1.0)
-         OR file_size = $3
+      WHERE LOWER(TRIM(title)) = LOWER(TRIM($1))
+         OR ($2::bigint IS NOT NULL AND file_size = $2)
       LIMIT 1;
     `;
-    const res = await pool.query(query, [title, duration, fileSize]);
+    const res = await pool.query(query, [trimmed, fileSize || null]);
     return res.rows[0] || null;
   }
 
@@ -99,6 +101,8 @@ export class SongRepository {
         file_path, file_name, mime_type, file_size, artwork_path
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      ON CONFLICT (LOWER(TRIM(title))) DO UPDATE
+      SET updated_at = CURRENT_TIMESTAMP
       RETURNING *;
     `;
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Search as SearchIcon, Music, Disc3, Sparkles } from 'lucide-react';
 import { Song } from '@/types/music';
 import { SongRow } from '@/components/songs/SongRow';
+import { deduplicateSongsByTitle } from '@/lib/formatters';
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
@@ -36,7 +37,7 @@ export default function SearchPage() {
         const res = await fetch(`${apiUrl}/api/songs/search?q=${encodeURIComponent(query.trim())}`);
         if (res.ok) {
           const data = await res.json();
-          setResults(data.data || []);
+          setResults(deduplicateSongsByTitle(data.data || []));
         }
       } catch (err) {
         console.error('Search request failed:', err);

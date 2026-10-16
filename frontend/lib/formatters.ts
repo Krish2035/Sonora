@@ -15,3 +15,18 @@ export function formatBytes(bytes: number | string | undefined | null, decimals 
   const i = Math.floor(Math.log(val) / Math.log(k));
   return `${parseFloat((val / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
+
+/**
+ * Filter songs array to only keep one song per unique title (case-insensitive & trimmed)
+ */
+export function deduplicateSongsByTitle<T extends { title?: string }>(songs: T[]): T[] {
+  if (!Array.isArray(songs)) return [];
+  const seen = new Set<string>();
+  return songs.filter((s) => {
+    const key = (s.title || '').trim().toLowerCase();
+    if (!key) return true;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
